@@ -13,17 +13,18 @@ from openrlhf.utils.utils import convert_token_to_id
 
 class ProcessRewardModelTrainer(ABC):
     """
-        Trainer to use while training reward model.
+    Trainer for training a process reward model.
 
     Args:
-        model (torch.nn.Module): the model to train
-        strategy (Strategy): the strategy to use for training
-        optim(Optimizer): the optimizer to use for training
-        train_dataset (RewardDataset): the dataset to use for training
-        eval_dataset (RewardDataset): the dataset to use for evaluation
-        batch_size (int, defaults to 1): the batch size while training
-        max_epochs (int, defaults to 2): the number of epochs to train
-        optim_kwargs (dict, defaults to {'lr':1e-4}): the kwargs to use while initializing optimizer
+        model (torch.nn.Module): The model to be trained.
+        strategy (Strategy): The training strategy to apply.
+        optim (Optimizer): The optimizer to use during training.
+        train_dataloader (DataLoader): The dataloader for the training dataset.
+        eval_dataloader (DataLoader): The dataloader for the evaluation dataset.
+        scheduler (Scheduler): The learning rate scheduler for dynamic adjustments during training.
+        tokenizer (Tokenizer): The tokenizer for processing input text data.
+        max_norm (float, defaults to 0.5): Maximum gradient norm for gradient clipping.
+        max_epochs (int, defaults to 2): Maximum number of training epochs.
     """
 
     def __init__(
@@ -56,9 +57,7 @@ class ProcessRewardModelTrainer(ABC):
         self.placeholder_token_id = convert_token_to_id(strategy.args.placeholder_token, self.tokenizer)
         self.reward_token_ids = self.args.reward_tokens
         if self.reward_token_ids is not None:
-            self.reward_token_ids = sorted(
-                [convert_token_to_id(token, self.tokenizer) for token in self.reward_token_ids]
-            )
+            self.reward_token_ids = [convert_token_to_id(token, self.tokenizer) for token in self.reward_token_ids]
 
         self.ignore_index = -100
         self.loss_fn = PRMLoss(self.placeholder_token_id, self.reward_token_ids)

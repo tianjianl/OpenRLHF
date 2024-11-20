@@ -31,6 +31,8 @@ def generate(args):
     if args.ta_prompt:
         with open(args.ta_prompt, "r") as f:
             user_prompt = f.read()
+    else:
+        user_prompt = ''
 
     if args.apply_chat_template:
         conversations = []
@@ -72,12 +74,16 @@ def generate(args):
             pad_token_id=tokenizer.pad_token_id,
             eos_token_id=tokenizer.eos_token_id,
         )
-        output = tokenizer.batch_decode(outputs[0], skip_special_tokens=True)
-        response = output[0][user_prompt_len:].replace(r"\n", "\n")
+
         if args.apply_chat_template:
+            generated_ids = outputs[0][:, input_ids.shape[1]:]
+            response = tokenizer.batch_decode(
+            generated_ids, skip_special_tokens=True, clean_up_tokenization_spaces=True
+            )[0]
             conversations.append({"role": "assistant", "content": response})
         else:
-            user_prompt = output[0]
+            user_prompt = tokenizer.batch_decode(outputs[0], skip_special_tokens=True)[0]
+            response = user_prompt[user_prompt_len:]
 
         print(response)
 
@@ -94,7 +100,6 @@ if __name__ == "__main__":
     # Sampling
     parser.add_argument("--pretrain", type=str, default=None, help="HF model name or path")
     parser.add_argument("--max_len", type=int, default=4096)
-    parser.add_argument("--greedy_sampling", action="store_true", default=False)
     parser.add_argument("--greedy_sampling", action="store_true", default=False, help="Use Greedy sampling")
     parser.add_argument("--top_p", type=float, default=0.9, help="top_p for Sampling")
     parser.add_argument("--temperature", type=float, default=0.2, help="temperature for Sampling")
@@ -108,6 +113,14 @@ if __name__ == "__main__":
     parser.add_argument("--enable_csft", action="store_true", default=False)
     parser.add_argument("--csft_prompt", type=str, default="<rm_score>: 5.00", help="conditional SFT prompt")
     args = parser.parse_args()
+
+    if args.input_template and "{}" not in args.input_template:
+        print("[Warning] {} not in args.input_template, set to None")
+        args.input_template = None
+
+    if args.input_template and '\\n' in args.input_template:
+        print("[Warning] input_template contains \\n chracters instead of newline. "
+              "You likely want to pass $'\\n' in Bash or \"`n\" in PowerShell.")
 
     print(args)
     generate(args)
