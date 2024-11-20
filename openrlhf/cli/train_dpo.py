@@ -69,6 +69,7 @@ def train(args):
         stopping_strategy="all_exhausted",
         train_split=args.train_split,
         eval_split=args.eval_split,
+        keep_high_quality_ratio=args.keep_high_quality_ratio,
     )
     train_data = train_data.select(range(min(args.max_samples, len(train_data))))
     eval_data = eval_data.select(range(min(args.max_samples, len(eval_data))))
@@ -186,6 +187,7 @@ if __name__ == "__main__":
     parser.add_argument("--gradient_checkpointing_use_reentrant", action="store_true", default=False)
 
     # DPO
+    parser.add_argument("--keep_high_quality_ratio", type=float, default=1.0)
     parser.add_argument("--max_epochs", type=int, default=1)
     parser.add_argument("--l2", type=float, default=0.0, help="weight decay loss")
     parser.add_argument("--beta", type=float, default=0.1)

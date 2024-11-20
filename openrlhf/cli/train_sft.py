@@ -90,6 +90,7 @@ def train(args):
 
     # scheduler
     num_update_steps_per_epoch = len(train_dataset) // args.train_batch_size
+
     max_steps = math.ceil(args.max_epochs * num_update_steps_per_epoch)
 
     scheduler = get_scheduler(
@@ -126,7 +127,6 @@ def train(args):
         max_epochs=args.max_epochs,
         tokenizer=tokenizer,
     )
-
     trainer.fit(args, consumed_samples, num_update_steps_per_epoch)
 
     # save model checkpoint after fitting on only rank0

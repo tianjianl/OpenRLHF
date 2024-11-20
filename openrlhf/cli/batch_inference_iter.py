@@ -36,13 +36,13 @@ def batch_generate_vllm(args):
         seed=args.seed,
         max_num_seqs=args.max_num_seqs,
         enable_prefix_caching=args.enable_prefix_caching,
-        gpu_memory_utilization=0.8 
     )
 
     # Create a sampling params object.
     sampling_params = SamplingParams(
         max_tokens=args.max_new_tokens,
         top_p=args.top_p,
+        use_beam_search=False,
         temperature=args.temperature,
         repetition_penalty=args.repetition_penalty,
         skip_special_tokens=False,
@@ -59,13 +59,13 @@ def batch_generate_vllm(args):
         max_count=args.max_samples,
         train_split=args.dataset_split,
     )
-    #if args.iter is None:
-    prompts_data = prompts_data.select(range(min(args.max_samples, len(prompts_data))))
-    #else:
-    #    # for iterative generation
-    #    start_idx = args.iter * args.rollout_batch_size
-    #    end_idx = start_idx + args.rollout_batch_size
-    #    prompts_data = prompts_data.select(range(start_idx, min(end_idx, len(prompts_data))))
+    if args.iter is None:
+        prompts_data = prompts_data.select(range(min(args.max_samples, len(prompts_data))))
+    else:
+        # for iterative generation
+        start_idx = args.iter * args.rollout_batch_size
+        end_idx = start_idx + args.rollout_batch_size
+        prompts_data = prompts_data.select(range(start_idx, min(end_idx, len(prompts_data))))
 
     prompts_dataset = PromptDataset(prompts_data, tokenizer, dummy_strategy, input_template=args.input_template)
     prompts = list(prompts_dataset)
@@ -287,11 +287,106 @@ def batch_rm_inference(args):
         with jsonlines.open(args.output_path, mode="w") as writer:
             writer.write_all(output_dataset)
 
+def batch_iterative_generate(args):
+    from vllm import LLM, SamplingParams
+
+    # configure strategy
+    class Empty:
+        pass
+
+    dummy_strategy = Empty()
+    dummy_strategy.print = print
+    dummy_strategy.is_rank_0 = lambda: True
+    dummy_strategy.args = args
+
+    # configure tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(args.pretrain, trust_remote_code=True)
+
+    # configure model
+    llm = LLM(
+        model=args.pretrain,
+        tensor_parallel_size=args.tp_size,
+        trust_remote_code=True,
+        seed=args.seed,
+        max_num_seqs=args.max_num_seqs,
+        enable_prefix_caching=args.enable_prefix_caching,
+    )
+
+    # Create a sampling params object.
+    sampling_params = SamplingParams(
+        max_tokens=args.max_new_tokens,
+        top_p=args.top_p,
+        use_beam_search=False,
+        temperature=args.temperature,
+        repetition_penalty=args.repetition_penalty,
+        skip_special_tokens=False,
+        truncate_prompt_tokens=args.prompt_max_len,
+        include_stop_str_in_output=True,
+    )
+
+    prompts_data = blending_datasets(
+        args.dataset,
+        args.dataset_probs,
+        dummy_strategy,
+        args.seed,
+        return_eval=False,
+        max_count=args.max_samples,
+        train_split=args.dataset_split,
+    )
+
+    if args.iter is None:
+        prompts_data = prompts_data.select(range(min(args.max_samples, len(prompts_data))))
+    else:
+        # for iterative generation
+        start_idx = args.iter * args.rollout_batch_size
+        end_idx = start_idx + args.rollout_batch_size
+        prompts_data = prompts_data.select(range(start_idx, min(end_idx, len(prompts_data))))
+
+    prompts_dataset = PromptDataset(prompts_data, tokenizer, dummy_strategy, input_template=args.input_template)
+    original_prompts = list(prompts_dataset)
+
+    # Conditional SFT inference
+    if args.enable_csft:
+        for i in range(len(original_prompts)):
+            original_prompts[i] += args.csft_prompt.strip() + " "
+
+    # Prepare output dataset
+    output_dataset = []
+
+    # For each prompt, we keep a list of generated responses
+    for idx, prompt in enumerate(tqdm(original_prompts, desc="Iterative Generating")):
+        current_prompt = prompt
+        generated_responses = []
+
+        for iteration in range(args.num_iterations):
+            # Generate response
+            outputs = llm.generate([current_prompt], sampling_params)
+            generated_text = outputs[0].outputs[0].text
+
+            # Append the generated response to the list
+            generated_responses.append(generated_text.strip())
+
+            # Update the prompt for the next iteration
+            current_prompt += (
+                f"A generated response is {generated_text.strip()}, and now I want you to generate another response but it should be different from previous ones. "
+                "The difference can be formality, tone, structure, conciseness, perspective, strategy, or even as simple as word choices. Now begin your respond."
+            )
+
+        # Add to the output dataset
+        output_dataset.append({
+            "input": prompt,
+            "generated_responses": generated_responses
+        })
+
+    # Write the output dataset
+    with jsonlines.open(args.output_path, mode="w") as writer:
+        writer.write_all(output_dataset)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--eval_task", type=str, default=None, help="Set to generate_vllm, generate (HF generate) or rm"
+        "--eval_task", type=str, default=None, help="Set to generate_vllm, generate (HF generate), rm, or iterative_generate"
     )
     parser.add_argument("--zero_stage", type=int, default=0, help="DeepSpeed ZeRO Stage")
     parser.add_argument("--local_rank", type=int, default=-1, help="local_rank for deepspeed cli")
@@ -348,6 +443,7 @@ if __name__ == "__main__":
         help="Used to slice the datasets in range iter * rollout_batch_size: (iter + 1) * rollout_batch_size",
     )
     parser.add_argument("--rollout_batch_size", type=int, default=2048, help="Number of samples to generate")
+    parser.add_argument("--num_iterations", type=int, default=1, help="Number of iterations for iterative generation")
 
     # For Conditional SFT
     parser.add_argument("--normalize_reward", action="store_true", default=False, help="Enable Reward Normazation")
@@ -358,9 +454,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.eval_task and args.eval_task == "generate":
         batch_generate(args)
-    if args.eval_task and args.eval_task == "generate_vllm":
+    elif args.eval_task and args.eval_task == "generate_vllm":
         batch_generate_vllm(args)
     elif args.eval_task and args.eval_task == "rm":
         batch_rm_inference(args)
+    elif args.eval_task and args.eval_task == "iterative_generate":
+        batch_iterative_generate(args)
     else:
-        print("Invalid or missing '--eval_task' argument. Please specify either 'generate' or 'rm'.")
+        print("Invalid or missing '--eval_task' argument. Please specify 'generate', 'generate_vllm', 'rm', or 'iterative_generate'.")
+
