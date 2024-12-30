@@ -1,0 +1,73 @@
+INFO 12-23 16:34:55 config.py:350] This model supports multiple tasks: {'embedding', 'generate'}. Defaulting to 'generate'.
+INFO 12-23 16:34:55 config.py:1020] Defaulting to use mp for distributed inference
+WARNING 12-23 16:34:55 arg_utils.py:1013] Chunked prefill is enabled by default for models with max_model_len > 32K. Currently, chunked prefill might not work with some features or models. If you encounter any issues, please disable chunked prefill by setting --enable-chunked-prefill=False.
+INFO 12-23 16:34:55 config.py:1136] Chunked prefill is enabled with max_num_batched_tokens=512.
+INFO 12-23 16:34:55 llm_engine.py:249] Initializing an LLM engine (v0.6.4.post1) with config: model='/scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0', speculative_config=None, tokenizer='/scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, override_neuron_config=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=131072, download_dir=None, load_format=LoadFormat.AUTO, tensor_parallel_size=4, pipeline_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), observability_config=ObservabilityConfig(otlp_traces_endpoint=None, collect_model_forward_time=False, collect_model_execute_time=False), seed=0, served_model_name=/scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0, num_scheduler_steps=1, chunked_prefill_enabled=True multi_step_stream_outputs=True, enable_prefix_caching=False, use_async_output_proc=True, use_cached_outputs=False, chat_template_text_format=string, mm_processor_kwargs=None, pooler_config=None)
+WARNING 12-23 16:34:56 multiproc_gpu_executor.py:56] Reducing Torch parallelism from 22 threads to 1 to avoid unnecessary CPU contention. Set OMP_NUM_THREADS in the external environment to tune this value as needed.
+INFO 12-23 16:34:56 custom_cache_manager.py:17] Setting Triton cache manager to: vllm.triton_utils.custom_cache_manager:CustomCacheManager
+INFO 12-23 16:34:56 selector.py:135] Using Flash Attention backend.
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:34:56 selector.py:135] Using Flash Attention backend.
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:34:56 multiproc_worker_utils.py:215] Worker ready; awaiting tasks
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:34:56 selector.py:135] Using Flash Attention backend.
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:34:56 multiproc_worker_utils.py:215] Worker ready; awaiting tasks
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:34:56 selector.py:135] Using Flash Attention backend.
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:34:56 multiproc_worker_utils.py:215] Worker ready; awaiting tasks
+INFO 12-23 16:35:00 utils.py:961] Found nccl from library libnccl.so.2
+INFO 12-23 16:35:00 pynccl.py:69] vLLM is using nccl==2.21.5
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:00 utils.py:961] Found nccl from library libnccl.so.2
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:00 utils.py:961] Found nccl from library libnccl.so.2
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:00 pynccl.py:69] vLLM is using nccl==2.21.5
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:00 pynccl.py:69] vLLM is using nccl==2.21.5
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:00 utils.py:961] Found nccl from library libnccl.so.2
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:00 pynccl.py:69] vLLM is using nccl==2.21.5
+INFO 12-23 16:35:01 custom_all_reduce_utils.py:242] reading GPU P2P access cache from /home/tli104/.cache/vllm/gpu_p2p_access_cache_for_0,1,2,3,4,5,6,7.json
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:01 custom_all_reduce_utils.py:242] reading GPU P2P access cache from /home/tli104/.cache/vllm/gpu_p2p_access_cache_for_0,1,2,3,4,5,6,7.json
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:01 custom_all_reduce_utils.py:242] reading GPU P2P access cache from /home/tli104/.cache/vllm/gpu_p2p_access_cache_for_0,1,2,3,4,5,6,7.json
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:01 custom_all_reduce_utils.py:242] reading GPU P2P access cache from /home/tli104/.cache/vllm/gpu_p2p_access_cache_for_0,1,2,3,4,5,6,7.json
+INFO 12-23 16:35:01 shm_broadcast.py:236] vLLM message queue communication handle: Handle(connect_ip='127.0.0.1', local_reader_ranks=[1, 2, 3], buffer=<vllm.distributed.device_communicators.shm_broadcast.ShmRingBuffer object at 0x7efe77039b10>, local_subscribe_port=57003, remote_subscribe_port=None)
+INFO 12-23 16:35:01 model_runner.py:1072] Starting to load model /scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0...
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:01 model_runner.py:1072] Starting to load model /scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0...
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:01 model_runner.py:1072] Starting to load model /scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0...
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:01 model_runner.py:1072] Starting to load model /scratch/dkhasha1/tli104/scaling_law_ckpts/uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0...
+INFO 12-23 16:35:03 model_runner.py:1077] Loading model weights took 3.7710 GB
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:03 model_runner.py:1077] Loading model weights took 3.7710 GB
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:03 model_runner.py:1077] Loading model weights took 3.7710 GB
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:03 model_runner.py:1077] Loading model weights took 3.7710 GB
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:04 worker.py:232] Memory profiling results: total_gpu_memory=79.15GiB initial_memory_usage=5.26GiB peak_torch_memory=3.81GiB memory_usage_post_profile=6.32GiB non_torch_memory=2.54GiB kv_cache_size=64.89GiB gpu_memory_utilization=0.90
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:04 worker.py:232] Memory profiling results: total_gpu_memory=79.15GiB initial_memory_usage=5.11GiB peak_torch_memory=3.81GiB memory_usage_post_profile=6.04GiB non_torch_memory=2.26GiB kv_cache_size=65.17GiB gpu_memory_utilization=0.90
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:04 worker.py:232] Memory profiling results: total_gpu_memory=79.15GiB initial_memory_usage=5.26GiB peak_torch_memory=3.81GiB memory_usage_post_profile=6.32GiB non_torch_memory=2.54GiB kv_cache_size=64.89GiB gpu_memory_utilization=0.90
+INFO 12-23 16:35:04 worker.py:232] Memory profiling results: total_gpu_memory=79.15GiB initial_memory_usage=5.11GiB peak_torch_memory=4.95GiB memory_usage_post_profile=6.42GiB non_torch_memory=2.63GiB kv_cache_size=63.65GiB gpu_memory_utilization=0.90
+INFO 12-23 16:35:05 distributed_gpu_executor.py:57] # GPU blocks: 130351, # CPU blocks: 8192
+INFO 12-23 16:35:05 distributed_gpu_executor.py:61] Maximum concurrency for 131072 tokens per request: 15.91x
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:06 model_runner.py:1400] Capturing cudagraphs for decoding. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:06 model_runner.py:1404] If out-of-memory error occurs during cudagraph capture, consider decreasing `gpu_memory_utilization` or switching to eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:06 model_runner.py:1400] Capturing cudagraphs for decoding. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:06 model_runner.py:1404] If out-of-memory error occurs during cudagraph capture, consider decreasing `gpu_memory_utilization` or switching to eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:06 model_runner.py:1400] Capturing cudagraphs for decoding. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:06 model_runner.py:1404] If out-of-memory error occurs during cudagraph capture, consider decreasing `gpu_memory_utilization` or switching to eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+INFO 12-23 16:35:06 model_runner.py:1400] Capturing cudagraphs for decoding. This may lead to unexpected consequences if the model is not static. To run the model in eager mode, set 'enforce_eager=True' or use '--enforce-eager' in the CLI.
+INFO 12-23 16:35:06 model_runner.py:1404] If out-of-memory error occurs during cudagraph capture, consider decreasing `gpu_memory_utilization` or switching to eager mode. You can also reduce the `max_num_seqs` as needed to decrease memory usage.
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:18 custom_all_reduce.py:224] Registering 2275 cuda graph addresses
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:19 custom_all_reduce.py:224] Registering 2275 cuda graph addresses
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:19 custom_all_reduce.py:224] Registering 2275 cuda graph addresses
+INFO 12-23 16:35:19 custom_all_reduce.py:224] Registering 2275 cuda graph addresses
+INFO 12-23 16:35:19 model_runner.py:1518] Graph capturing finished in 13 secs, took 1.00 GiB
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:35:19 model_runner.py:1518] Graph capturing finished in 13 secs, took 1.00 GiB
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:35:19 model_runner.py:1518] Graph capturing finished in 13 secs, took 1.00 GiB
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:35:19 model_runner.py:1518] Graph capturing finished in 13 secs, took 1.00 GiB
+INFO 12-23 16:36:19 multiproc_worker_utils.py:133] Terminating local vLLM worker processes
+[1;36m(VllmWorkerProcess pid=1570317)[0;0m INFO 12-23 16:36:19 multiproc_worker_utils.py:240] Worker exiting
+[1;36m(VllmWorkerProcess pid=1570315)[0;0m INFO 12-23 16:36:19 multiproc_worker_utils.py:240] Worker exiting
+[1;36m(VllmWorkerProcess pid=1570316)[0;0m INFO 12-23 16:36:19 multiproc_worker_utils.py:240] Worker exiting
+                                                                length_controlled_winrate  win_rate  standard_error  n_total  avg_length
+gpt-4-turbo-2024-04-09                                                              55.02     46.12            1.47      805        1802
+gpt4_1106_preview                                                                   50.00     50.00            0.00      805        2049
+claude-3-opus-20240229                                                              40.51     29.11            1.39      805        1388
+claude-3-sonnet-20240229                                                            34.87     25.56            1.34      805        1420
+Meta-Llama-3-70B-Instruct                                                           34.42     33.18            1.39      805        1919
+uf_Llama-3.1-8B-Instruct_2_Skywork-Reward-Gemma-2-27B-v0.2_0.0                      33.25     35.77            1.42      805        2173
+gemini-pro                                                                          24.38     18.18            1.16      805        1456
+Mixtral-8x7B-Instruct-v0.1                                                          23.69     18.26            1.19      805        1465
+Meta-Llama-3-8B-Instruct                                                            22.92     22.57            1.26      805        1899
+Mistral-7B-Instruct-v0.2                                                            17.11     14.72            1.08      805        1676
+alpaca-7b                                                                            5.88      2.59            0.49      805         396
