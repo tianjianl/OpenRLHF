@@ -6,7 +6,7 @@ from datetime import datetime
 
 from transformers.trainer import get_scheduler
 
-from openrlhf.datasets import RewardDataset
+from openrlhf.dataset_utils import RewardDataset
 from openrlhf.models import get_llm_for_sequence_regression
 from openrlhf.trainer import RewardModelTrainer
 from openrlhf.utils import blending_datasets, get_strategy, get_tokenizer

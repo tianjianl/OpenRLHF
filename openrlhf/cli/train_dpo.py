@@ -7,7 +7,7 @@ from datetime import datetime
 
 from transformers.trainer import get_scheduler
 
-from openrlhf.datasets import RewardDataset
+from openrlhf.dataset_utils import RewardDataset
 from openrlhf.models import Actor
 from openrlhf.trainer import DPOTrainer
 from openrlhf.utils import blending_datasets, get_strategy, get_tokenizer
@@ -71,6 +71,8 @@ def train(args):
         eval_split=args.eval_split,
         keep_high_quality_ratio=args.keep_high_quality_ratio,
     )
+
+    
     train_data = train_data.select(range(min(args.max_samples, len(train_data))))
     eval_data = eval_data.select(range(min(args.max_samples, len(eval_data))))
     train_dataset = RewardDataset(
@@ -113,12 +115,19 @@ def train(args):
     num_update_steps_per_epoch = len(train_dataset) // args.train_batch_size
     max_steps = math.ceil(args.max_epochs * num_update_steps_per_epoch)
 
+    #scheduler = get_scheduler(
+    #    "cosine_with_min_lr",
+    #    optim,
+    #    num_warmup_steps=math.ceil(max_steps * 0.03),
+    #    num_training_steps=max_steps,
+    #    scheduler_specific_kwargs={"min_lr": args.learning_rate * 0.1},
+    #)
+    
     scheduler = get_scheduler(
-        "cosine_with_min_lr",
+        'linear',
         optim,
-        num_warmup_steps=math.ceil(max_steps * 0.03),
         num_training_steps=max_steps,
-        scheduler_specific_kwargs={"min_lr": args.learning_rate * 0.1},
+        num_warmup_steps=int(max_steps * 0.1),
     )
 
     # strategy prepare
@@ -224,7 +233,7 @@ if __name__ == "__main__":
     parser.add_argument("--pretrain", type=str, default=None)
     parser.add_argument("--ref_pretrain", type=str, default=None)
     parser.add_argument("--dataset", type=str, default=None)
-    parser.add_argument("--dataset_probs", type=str, default="1.0", help="sampling probs for datasets")
+    parser.add_argument("--dataset_probs", type=str, default=None, help="sampling probs for datasets")
     parser.add_argument("--train_split", type=str, default="train", help="train split of the HF dataset")
     parser.add_argument("--eval_split", type=str, default="test", help="test split of the dataset")
 

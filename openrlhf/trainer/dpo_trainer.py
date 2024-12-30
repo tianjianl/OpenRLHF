@@ -140,6 +140,7 @@ class DPOTrainer(ABC):
             for data in self.train_dataloader:
                 if not self.packing_samples:
                     chosen_ids, c_mask, reject_ids, r_mask, prompt_id_lens = data
+
                     chosen_ids = chosen_ids.squeeze(1).to(torch.cuda.current_device())
                     c_mask = c_mask.squeeze(1).to(torch.cuda.current_device())
                     reject_ids = reject_ids.squeeze(1).to(torch.cuda.current_device())
@@ -148,10 +149,13 @@ class DPOTrainer(ABC):
                     chosen_logps, rejected_logps, aux_loss, nll_loss = self.concatenated_forward(
                         self.model, chosen_ids, c_mask, reject_ids, r_mask, prompt_id_lens
                     )
+                    
                     with torch.no_grad():
                         reference_chosen_logps, reference_rejected_logps, _, _ = self.concatenated_forward(
                             self.ref_model, chosen_ids, c_mask, reject_ids, r_mask, prompt_id_lens
                         )
+                        
+
                 else:
                     packed_input_ids, packed_attention_masks, packed_seq_lens, prompt_id_lens = data
                     packed_input_ids, packed_attention_masks = packed_input_ids.to(
@@ -177,6 +181,7 @@ class DPOTrainer(ABC):
                     nll_loss = 0
 
                 loss = preference_loss + aux_loss * self.args.aux_loss_coef + nll_loss * self.args.nll_loss_coef
+
                 self.strategy.backward(loss, self.model, self.optimizer)
                 self.strategy.optimizer_step(self.optimizer, self.model, self.scheduler)
 

@@ -48,11 +48,12 @@ def blending_datasets(
     stopping_strategy="first_exhausted",
     train_split="train",
     eval_split="test",
+    keep_high_quality_ratio=1.0,
 ):
     datasets = datasets.split(",")
-    probabilities = list(map(float, probabilities.split(",")))
-    assert len(probabilities) == len(datasets)
-
+    if probabilities != None:
+        probabilities = list(map(float, probabilities.split(",")))
+    #assert len(probabilities) == len(datasets)
     train_data_list = []
     eval_data_list = []
     for i, dataset in enumerate(datasets):
@@ -84,8 +85,31 @@ def blending_datasets(
         # remote/local folder or common file
         else:
             data = load_dataset(dataset, data_dir=data_dir)
+            
+            if keep_high_quality_ratio < 1.0 and dataset == 'HuggingFaceH4/ultrafeedback_binarized':
+                data = data.map(lambda x: {'total_score': x['score_chosen'] + x['score_rejected']})
+                #data = data.map(lambda x: {'chosen': x["chosen"][0]["content"]})
+                #data = data.map(lambda x: {'rejected': x["rejected"][0]["content"]})
+                data = data.sort('total_score', reverse=True)
+                keep_count = int(len(data['train_prefs'])*keep_high_quality_ratio)   
+                data['train_prefs'] = data['train_prefs'].select(range(keep_count))
+            
+            if keep_high_quality_ratio < 1.0 and dataset == 'dogtooth/helpsteer2_binarized':
+                data = data.map(lambda x: {'total_score': x['score_chosen'] + x['score_rejected']})
+                #data = data.map(lambda x: {'chosen': x["chosen"][0]["content"]})
+                #data = data.map(lambda x: {'rejected': x["rejected"][0]["content"]})
+                data = data.sort('total_score', reverse=True)
+                keep_count = int(len(data['train'])*keep_high_quality_ratio)   
+                data['train'] = data['train'].select(range(keep_count))
+                    
             strategy.print(f"loaded {dataset} from files")
 
+            # only keep columns "chosen" and "rejected"
+            
+        if 'ultrafeedback_binarized' in dataset and 'weighted_sft' not in dataset:
+            train_split = 'train_prefs'
+        else:
+            train_split = 'train'
         if train_split and train_split in data:
             train_data = data[train_split].select(range(min(max_count, len(data[train_split]))))
         else:

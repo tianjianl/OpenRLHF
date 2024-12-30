@@ -13,15 +13,18 @@ class GPTLMLoss(nn.Module):
     GPT Language Model Loss
     """
 
-    def __init__(self):
+    def __init__(self, reduction: str = 'mean') -> None:
         super().__init__()
         self.IGNORE_INDEX = -100
-        self.loss = nn.CrossEntropyLoss(ignore_index=self.IGNORE_INDEX)
-
+        if reduction == 'none':
+            self.loss = nn.CrossEntropyLoss(ignore_index=self.IGNORE_INDEX, reduction='none')
+        else:
+            self.loss = nn.CrossEntropyLoss(ignore_index=self.IGNORE_INDEX)
+            
     def forward(self, logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
-        shift_logits = logits[..., :-1, :].contiguous()
-        shift_labels = labels[..., 1:].contiguous()
-        # Flatten the tokens
+        shift_logits = logits[..., :-1, :].contiguous() #batch_size, seq_len, vocab_size
+        shift_labels = labels[..., 1:].contiguous() # batch_size, seq_len
+
         return self.loss(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 
 
@@ -126,7 +129,8 @@ class DPOLoss(nn.Module):
         pi_logratios = policy_chosen_logps - policy_rejected_logps
         ref_logratios = reference_chosen_logps - reference_rejected_logps
         logits = pi_logratios - ref_logratios
-
+        
+        
         if self.ipo:
             losses = (logits - 1 / (2 * self.beta)) ** 2  # Eq. 17 of https://arxiv.org/pdf/2310.12036v2.pdf
         else:
@@ -135,11 +139,13 @@ class DPOLoss(nn.Module):
                 -F.logsigmoid(self.beta * logits) * (1 - self.label_smoothing)
                 - F.logsigmoid(-self.beta * logits) * self.label_smoothing
             )
+            
+            #losses = (-F.logsigmoid(self.beta * chosen_logratios - 0.5*self.beta*rejected_logratios))
 
         loss = losses.mean()
         chosen_rewards = self.beta * (policy_chosen_logps - reference_chosen_logps).detach()
         rejected_rewards = self.beta * (policy_rejected_logps - reference_rejected_logps).detach()
-
+    
         return loss, chosen_rewards, rejected_rewards
 
 

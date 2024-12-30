@@ -8,7 +8,7 @@ from torch.optim import Optimizer
 from tqdm import tqdm
 from transformers.trainer import get_scheduler
 
-from openrlhf.datasets import SFTDataset
+from openrlhf.dataset_utils import SFTDataset
 from openrlhf.models import GPTLMLoss
 from openrlhf.utils.distributed_sampler import DistributedSampler
 
@@ -163,6 +163,8 @@ class SFTTrainer(ABC):
                             label[:source_len] = self.loss_fn.IGNORE_INDEX
 
                 gpt_loss = self.loss_fn(output.logits, labels)
+                gpt_loss = gpt_loss.mean()
+                
                 loss = gpt_loss + aux_loss * self.args.aux_loss_coef
                 self.strategy.backward(loss, self.model, self.optimizer)
                 self.strategy.optimizer_step(self.optimizer, self.model, self.scheduler)

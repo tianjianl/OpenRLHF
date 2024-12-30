@@ -1,7 +1,7 @@
 set -x
 
 ray job submit --address="http://127.0.0.1:8265" \
-   --runtime-env-json='{"working_dir": "/openrlhf"}' \
+   --runtime-env-json='{"working_dir": "/weka/home/tli104/OpenRLHF/openrlhf"}' \
    -- python3 -m openrlhf.cli.train_ppo_ray \
    --ref_num_nodes 1 \
    --ref_num_gpus_per_node 1 \
@@ -11,12 +11,12 @@ ray job submit --address="http://127.0.0.1:8265" \
    --actor_num_gpus_per_node 4 \
    --vllm_num_engines 2 \
    --vllm_tensor_parallel_size 1 \
-   --pretrain OpenRLHF/Llama-3-8b-sft-mixture \
-   --reward_pretrain OpenRLHF/Llama-3-8b-rm-700k \
-   --save_path /openrlhf/examples/test_scripts/checkpoint/llama3-8b-rlhf \
-   --micro_train_batch_size 8 \
-   --train_batch_size 128 \
-   --micro_rollout_batch_size 32 \
+   --pretrain meta-llama/Meta-Llama-3.1-8B-Instruct \
+   --reward_pretrain Skywork/Skywork-Reward-Llama-3.1-8B-v0.2 \
+   --save_path ${SCRATCH_DIR}/scaling_law_ckpts/llama3-8b-rlhf-uf \
+   --micro_train_batch_size 1 \
+   --train_batch_size 256 \
+   --micro_rollout_batch_size 1 \
    --rollout_batch_size 1024 \
    --n_samples_per_prompt 1 \
    --max_epochs 1 \
@@ -29,12 +29,12 @@ ray job submit --address="http://127.0.0.1:8265" \
    --actor_learning_rate 5e-7 \
    --critic_learning_rate 9e-6 \
    --init_kl_coef 0.01 \
-   --prompt_data OpenRLHF/prompt-collection-v0.1 \
-   --input_key context_messages \
+   --prompt_data HuggingFaceH4/ultrafeedback_binarized \
+   --input_key prompt \
    --apply_chat_template \
    --normalize_reward \
    --adam_offload \
    --gradient_checkpointing \
    --packing_samples \
    --save_steps -1 \
-   --ckpt_path /openrlhf/examples/test_scripts/ckpt/llama3-8b-rlhf
+   --ckpt_path ${SCRATCH_DIR}/scaling_law_ckpts/llama3-8b-rlhf-uf

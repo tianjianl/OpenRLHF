@@ -15,9 +15,9 @@ ray job submit --address="http://127.0.0.1:8265" \
    --vllm_tensor_parallel_size 2 \
    --colocate_critic_reward \
    --colocate_actor_ref \
-   --pretrain OpenRLHF/Llama-3-8b-sft-mixture \
-   --reward_pretrain OpenRLHF/Llama-3-8b-rm-mixture \
-   --save_path /openrlhf/examples/checkpoint/llama3-8b-rlhf \
+   --pretrain meta-llama/Meta-Llama-3.1-8B-Instruct \
+   --reward_pretrain Skywork/Skywork-Reward-Llama-3.1-8B-v0.2 \
+   --save_path ${SCRATCH_DIR}/openrlhf_checkpoints/llama3-8b-rlhf \
    --micro_train_batch_size 8 \
    --train_batch_size 128 \
    --micro_rollout_batch_size 32 \
@@ -40,7 +40,7 @@ ray job submit --address="http://127.0.0.1:8265" \
    --flash_attn \
    --gradient_checkpointing \
    --load_checkpoint \
-   --use_wandb {wandb_token}
+   --use_wandb $WANDB_API_KEY
 
 # --runtime-env-json='{"setup_commands": ["pip install openrlhf[vllm]"]}' [Install deps]
 # --ref_reward_offload [Offload to CPU]

@@ -1,0 +1,181 @@
+_wandb:
+    value:
+        cli_version: 0.18.5
+        m:
+            - "1": eval/global_step
+              "6":
+                - 3
+              "7": []
+            - "1": train/gpt_loss
+              "5": 3
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": train/global_step
+              "6":
+                - 3
+              "7": []
+            - "1": train/loss_mean
+              "5": 3
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": train/lr
+              "5": 3
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": eval/eval gpt_loss
+              "5": 1
+              "6":
+                - 1
+                - 3
+              "7": []
+        python_version: 3.10.15
+        t:
+            "1":
+                - 1
+                - 11
+                - 30
+                - 49
+                - 51
+                - 55
+                - 71
+                - 98
+            "2":
+                - 1
+                - 11
+                - 30
+                - 49
+                - 51
+                - 55
+                - 71
+                - 98
+            "3":
+                - 2
+                - 7
+                - 13
+                - 16
+                - 23
+                - 55
+                - 66
+            "4": 3.10.15
+            "5": 0.18.5
+            "6": 4.46.1
+            "8":
+                - 5
+            "12": 0.18.5
+            "13": linux-x86_64
+adam_betas:
+    value:
+        - 0.9
+        - 0.95
+adam_offload:
+    value: false
+apply_chat_template:
+    value: true
+aux_loss_coef:
+    value: 0
+bf16:
+    value: true
+ckpt_path:
+    value: ./ckpt/checkpoints_sft
+dataset:
+    value: dogtooth/helpsteer2_preference_sft
+dataset_probs:
+    value: "1.0"
+disable_fast_tokenizer:
+    value: false
+disable_trace_cache:
+    value: false
+eval_split:
+    value: test
+eval_steps:
+    value: -1
+flash_attn:
+    value: true
+grad_accum_dtype:
+    value: null
+gradient_checkpointing:
+    value: true
+gradient_checkpointing_use_reentrant:
+    value: false
+input_key:
+    value: prompt
+input_template:
+    value: "User: {}\nAssistant: "
+l2:
+    value: 0
+learning_rate:
+    value: 5e-06
+load_checkpoint:
+    value: true
+load_in_4bit:
+    value: false
+local_rank:
+    value: 0
+logging_steps:
+    value: 1
+lora_alpha:
+    value: 16
+lora_dropout:
+    value: 0
+lora_rank:
+    value: 0
+lr_scheduler:
+    value: cosine_with_min_lr
+max_ckpt_mem:
+    value: 1e+08
+max_ckpt_num:
+    value: 3
+max_epochs:
+    value: 3
+max_len:
+    value: 8192
+max_norm:
+    value: 1
+max_samples:
+    value: 500000
+micro_train_batch_size:
+    value: 1
+output_key:
+    value: response
+packing_samples:
+    value: false
+pretrain:
+    value: meta-llama/Meta-Llama-3.1-8B-Instruct
+pretrain_mode:
+    value: false
+save_path:
+    value: /scratch/dkhasha1/tli104/judge_checkpoints/llama31-8b-hs2-sft-human-written-rationale
+save_steps:
+    value: 400
+seed:
+    value: 42
+target_modules:
+    value: all-linear
+tokenizer_chat_template:
+    value: meta-llama/Meta-Llama-3.1-8B-Instruct
+train_batch_size:
+    value: 256
+train_split:
+    value: train
+use_tensorboard:
+    value: null
+use_wandb:
+    value: ab0c1974c46fd67412d5b29c5b71ccb5488e0ce7
+wandb_group:
+    value: null
+wandb_org:
+    value: null
+wandb_project:
+    value: openrlhf_train_sft
+wandb_run_name:
+    value: sft_1102T16:26
+zero_stage:
+    value: 3
+zpg:
+    value: 1

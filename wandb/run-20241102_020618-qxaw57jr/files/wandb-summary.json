@@ -1,0 +1,1 @@
+{"train/gpt_loss": 0.0, "train/loss_mean": 1.7480252019711498e-17, "train/lr": 4.999999987376214e-07, "train/global_step": 1293, "_timestamp": 1730535805.1994724, "_runtime": 8226.580032348633, "_step": 1295, "eval/eval gpt_loss": 5.9604641222676946e-08, "eval/global_step": 1293, "_wandb": {"runtime": 8232}}
